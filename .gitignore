@@ -1,4 +1,4 @@
-/.env
-/venv/
-/.git
 /.idea
+*/obj
+*/bin
+*/appsettings.json
