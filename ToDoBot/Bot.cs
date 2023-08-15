@@ -9,12 +9,14 @@ public class Bot
     private readonly ulong _channelId;
     private readonly string _calendarUrl;
     private readonly DiscordSocketClient _client;
+    private readonly ICalendarService _calendarService;
 
-    public Bot(string token, ulong channelId, string calendarUrl)
+    public Bot(string token, ulong channelId, string calendarUrl, ICalendarService calendarService)
     {
         _token = token;
         _channelId = channelId;
         _calendarUrl = calendarUrl;
+        _calendarService = calendarService;
         _client = new DiscordSocketClient();
     }
 
