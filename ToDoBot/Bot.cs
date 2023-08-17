@@ -73,7 +73,7 @@ public class Bot
         var startDate = DateTime.Today;
         var endDate = startDate.AddDays(7);
         
-        // Filter the ToDo items based on the date range
+        // Filter the items based on the date range
         var toDosWithinNext7Days = toDoItems.Where(todo => 
             todo.SubmissionDate >= startDate && todo.SubmissionDate <= endDate
         ).ToList();
