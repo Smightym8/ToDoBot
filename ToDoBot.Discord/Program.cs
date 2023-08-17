@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ToDoBot.Common;
 
-namespace ToDoBot;
+namespace ToDoBot.Discord;
 
 public class Program
 {

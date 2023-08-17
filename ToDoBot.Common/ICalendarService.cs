@@ -1,4 +1,4 @@
-namespace ToDoBot;
+namespace ToDoBot.Common;
 
 public interface ICalendarService
 {

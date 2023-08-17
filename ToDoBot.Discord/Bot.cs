@@ -2,7 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using ToDoBot.Common;
 
-namespace ToDoBot;
+namespace ToDoBot.Discord;
 
 public class Bot
 {
@@ -64,7 +64,7 @@ public class Bot
     {
         var today = DateTime.Now.DayOfWeek;
 
-        if (today != DayOfWeek.Monday && today != DayOfWeek.Wednesday && today != DayOfWeek.Friday) return;
+        if (today != DayOfWeek.Monday && today != DayOfWeek.Wednesday && today != DayOfWeek.Thursday) return;
 
         if (_client.GetChannel(_channelId) is not IMessageChannel channel) return;
         

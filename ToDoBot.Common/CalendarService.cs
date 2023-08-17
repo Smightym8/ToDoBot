@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace ToDoBot;
+namespace ToDoBot.Common;
 
 public class CalendarService : ICalendarService
 {
