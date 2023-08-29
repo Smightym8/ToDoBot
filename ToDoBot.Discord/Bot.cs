@@ -1,3 +1,4 @@
+using System.Net;
 using Discord;
 using Discord.WebSocket;
 using ToDoBot.Common;
@@ -64,24 +65,44 @@ public class Bot
     {
         var today = DateTime.Now.DayOfWeek;
 
-        if (today != DayOfWeek.Monday && today != DayOfWeek.Wednesday && today != DayOfWeek.Thursday) return;
+        if (today != DayOfWeek.Monday && today != DayOfWeek.Wednesday && today != DayOfWeek.Friday) return;
 
         if (_client.GetChannel(_channelId) is not IMessageChannel channel) return;
+
+        try
+        {
+            var calendarData = await _calendarService.DownloadCalendarAsync(_calendarUrl);
+            var toDoItems = _calendarService.ParseCalendarDataToToDoItem(calendarData);
         
-        var calendarData = await _calendarService.DownloadCalendarAsync(_calendarUrl);
-        var toDoItems = _calendarService.ParseCalendarDataToToDoItem(calendarData);
+            var startDate = DateTime.Today;
+            var endDate = startDate.AddDays(7);
         
-        var startDate = DateTime.Today;
-        var endDate = startDate.AddDays(7);
+            var toDosWithinNext7Days = toDoItems.Where(todo => 
+                todo.SubmissionDate >= startDate && todo.SubmissionDate <= endDate
+            ).ToList();
+
+            if (toDosWithinNext7Days.Count > 0)
+            {
+                var embed = CreateEmbed(toDosWithinNext7Days);
+                await channel.SendMessageAsync("", false, embed);
+            
+                return;
+            }
         
-        // Filter the items based on the date range
-        var toDosWithinNext7Days = toDoItems.Where(todo => 
-            todo.SubmissionDate >= startDate && todo.SubmissionDate <= endDate
-        ).ToList();
-        
-        var embed = CreateEmbed(toDosWithinNext7Days);
-        
-        await channel.SendMessageAsync("", false, embed);
+            await channel.SendMessageAsync("Nothing to do for the next 7 days");
+        }
+        catch (HttpRequestException httpRequestException)
+        {
+            switch (httpRequestException.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    await channel.SendMessageAsync("Could not download calendar. Invalid calendar url.");
+                    break;
+                default:
+                    await channel.SendMessageAsync("An error occured.");
+                    break;
+            }
+        }
     }
     
     private Embed CreateEmbed(List<ToDoItem> toDoItems)

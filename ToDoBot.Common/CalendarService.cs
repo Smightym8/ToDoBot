@@ -5,21 +5,12 @@ namespace ToDoBot.Common;
 
 public class CalendarService : ICalendarService
 {
-    public async Task<string> DownloadCalendarAsync(string icalLink)
+    public async Task<string> DownloadCalendarAsync(string calendarUrl)
     {
         using var httpClient = new HttpClient();
-        var icalData = "";
         
-        try
-        {
-            icalData = await httpClient.GetStringAsync(icalLink);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error: {e}");
-        }
-
-        return icalData;
+        var calendar = await httpClient.GetStringAsync(calendarUrl);
+        return calendar;
     }
 
     public List<ToDoItem> ParseCalendarDataToToDoItem(string calendarData)
