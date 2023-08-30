@@ -1,7 +1,9 @@
 using System.Net;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using ToDoBot.Common;
+using ToDoBot.Discord.Services;
 
 namespace ToDoBot.Discord;
 
@@ -13,7 +15,7 @@ public class Bot
     private readonly DiscordSocketClient _client;
     private readonly ICalendarService _calendarService;
     private Timer _dailyTimer = default!;
-
+    
     public Bot(string token, ulong channelId, string calendarUrl, ICalendarService calendarService)
     {
         _token = token;
@@ -27,20 +29,23 @@ public class Bot
     {
         _client.Log += LogAsync;
         _client.Ready += ReadyAsync;
-
+        
         await _client.LoginAsync(TokenType.Bot, _token);
         await _client.StartAsync();
+
+        // TODO: Make use of dependency injection
+        var commandService = new CommandService();
+        var commandHandler = new CommandHandler(_client, commandService);
+        await commandHandler.InstallCommandsAsync();
         
         await Task.Delay(-1);
     }
     
-    private Task ReadyAsync()
+    private async Task ReadyAsync()
     {
         Console.WriteLine("Bot is ready!");
         
-        SetupDailyTimer();
-        
-        return Task.CompletedTask;
+        //SetupDailyTimer();
     }
     
     private Task LogAsync(LogMessage log)
@@ -48,6 +53,11 @@ public class Bot
         Console.WriteLine(log);
         
         return Task.CompletedTask;
+    }
+    
+    private async Task SlashCommandHandler(SocketSlashCommand command)
+    {
+        await command.RespondAsync($"You executed {command.Data.Name}");
     }
     
     private void SetupDailyTimer()

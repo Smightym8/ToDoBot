@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Discord.Interactions;
+using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToDoBot.Common;
+using ToDoBot.Discord.Services;
 
 namespace ToDoBot.Discord;
 
@@ -15,6 +18,7 @@ public class Program
     private static IServiceProvider CreateProvider()
     {
         var collection = new ServiceCollection();
+        
         collection.AddScoped<ICalendarService, CalendarService>();
         
         return collection.BuildServiceProvider();
