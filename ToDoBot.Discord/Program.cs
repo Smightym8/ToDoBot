@@ -1,15 +1,10 @@
-﻿using Discord.Interactions;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ToDoBot.Common;
-using ToDoBot.Discord.Services;
 
 namespace ToDoBot.Discord;
 
 public class Program
 {
-    private readonly IServiceProvider _serviceProvider = CreateProvider();
     private readonly IConfigurationRoot _configuration = CreateConfiguration();
 
     static void Main()
@@ -17,11 +12,7 @@ public class Program
     
     private static IServiceProvider CreateProvider()
     {
-        var collection = new ServiceCollection();
-        
-        collection.AddScoped<ICalendarService, CalendarService>();
-        
-        return collection.BuildServiceProvider();
+        return new ServiceCollection().BuildServiceProvider();
     }
     
     private static IConfigurationRoot CreateConfiguration()
@@ -36,20 +27,16 @@ public class Program
     
     private async Task RunAsync()
     {
-        var calendarService = _serviceProvider.GetRequiredService<ICalendarService>();
-        
         // Read values from the configuration
         var token = _configuration.GetSection("AppSettings").GetSection("BotToken").Value;
-        var channelId = Convert.ToUInt64(_configuration.GetSection("AppSettings").GetSection("ChannelId").Value);
-        var calendarUrl = _configuration.GetSection("AppSettings").GetSection("CalendarUrl").Value;
 
-        if (token == null || calendarUrl == null)
+        if (token == null)
         {
             Console.WriteLine("Could not read values from appsettings.json");
             return;
         }
         
-        var bot = new Bot(token, channelId, calendarUrl, calendarService);
+        var bot = new Bot(token);
         await bot.Start();
     }
 }
